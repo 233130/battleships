@@ -1,3 +1,9 @@
+# Klasa Board odpowiada za tablicę gry
+# Posiada metody:
+# -inicjującą przyjmująca szerokość i wysokość tablicy
+# -rysuj pełną tablicę (rysuje statki i trafienia)
+# -rysuj pustą tablicę (rysuje tylko trafienia)
+# -metoda odpowiadająca za trafienia na planszy
 class Board:
 
     def __init__(self, width, high):
@@ -14,10 +20,37 @@ class Board:
 
     def print_blank_board(self):
         for row in self.board:
-            print((" ").join(row))
-        print("\n")
+            for character in row:
+                if character == "." or character == "X" or character == "O":
+                    print(character, "", end='')
+                else:
+                    print(". ", end='')
+            print("")
+
+    def hit(self):
+        good = True
+        while good:
+            x = int(input("Podaj wartość X: "))
+            y = int(input("Podaj wartość Y: "))
+            if x > self.width or y > self.high:
+                print("Jesteś poza planszą. Spróbuj raz jeszcze")
+                continue
+            if self.board[y][x] == ".":
+                self.board[y][x] = "O"
+                print("PUDŁO")
+                good = False
+            elif self.board[y][x] == "O" or self.board[y][x] == "X":
+                print("Już tu celowałeś, spróbuj raz jeszcze")
+            else:
+                self.board[y][x] = "X"
+                print("TRAFIONY")
+                good = False
 
 
+# Klasa Ship odpowiada za statki w grze
+# Posiada metody:
+# -inicjującą przyjmująca wielkość statku
+# -umieszczającą statek na konkrentej planszy
 class Ship:
 
     def __init__(self, size):
@@ -55,7 +88,10 @@ class Ship:
 
 tablica = Board(8, 6)
 tablica.print_board()
-statek = Ship(2)
+statek = Ship(5)
+statek.put_ship_on_board(tablica.board)
+tablica.print_board()
 for i in range(5):
-    statek.put_ship_on_board(tablica.board)
+    tablica.print_blank_board()
+    tablica.hit()
     tablica.print_board()
