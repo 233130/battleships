@@ -21,6 +21,9 @@ class EmptyField(Field):
         self.can_hit = True
         self.can_put_ship = True
 
+    def field_hitted(self):
+        return MishitField()
+
 
 class HitField(Field):
     def __init__(self):
@@ -52,6 +55,9 @@ class ShipField(Field):
         self.can_put_ship = False
         self.id = id
         self.ship_id = ship_id
+
+    def field_hitted(self):
+        return HitField()
 
 
 class Ship:
@@ -90,13 +96,21 @@ class Ship:
                 board.change_field(x + i, y, mast)
             self.fields.append(mast)
 
+    def ship_hitted(self, new_field):
+        self.fields.remove(new_field)
+        if not self.fields:
+            print("Trafiony, zatopiony")
+            return True
+        else:
+            return False
+
 
 class Board:
     def __init__(self, width, high):
         self.width = width
         self.high = high
         self.board = [[EmptyField() for row in range(self.width)] for i in range(self.high)]
-        self.ships = []
+        self.ships = {}
         self.board[1][2] = MishitField()
 
     def print_board(self):
@@ -121,10 +135,15 @@ class Board:
     def board_hit(self, x, y):
         field = self.get_obj(x, y)
         if field.can_hit:
-            if field.can_put_ship:
-                self.change_field(x, y, MishitField())
-            else:
-                pass
+            new_field = field.field_hitted()
+            self.change_field(x, y, new_field)
+            if not field.can_put_ship:
+                hitted_ship = self.ships[field.ship_id]
+                if hitted_ship.ship_hitted(field):
+                    del self.ships[field.ship_id]
+                    if not self.ships:
+                        print("Koniec gry. Zatopiono wszystkie statki")
+
         else:
             print("Nie możesz uderzyć w dane pole")
 
@@ -135,7 +154,10 @@ for i in range(2):
     rozmiar = int(input("Podaj wielkość statku: "))
     statek = Ship(i, rozmiar)
     statek.set_ship_on_board(tablica)
-    tablica.ships.append(statek)
+    tablica.ships[i] = statek
     tablica.print_board()
-tablica.board_hit(1, 1)
-tablica.print_board()
+for i in range(5):
+    x = int(input("Podaj wartość X: "))
+    y = int(input("Podaj wartość Y: "))
+    tablica.board_hit(x, y)
+    tablica.print_board()
