@@ -6,6 +6,7 @@ plik battleships to jest pierwsza wersja posiadająca tylko 2 klasy.
 Końcowy projekt posiada 8 klas
 
 Klasa abstrakcyjna pole po której dziedziczą 4 klasy:
+
 *Puste pole
 
 *Pole trafione
